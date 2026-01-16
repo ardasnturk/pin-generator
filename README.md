@@ -23,6 +23,30 @@ npx tsx generatePins.ts
 
 When it finishes, PNGs are written to `pngWithSvg/` and `mapSettings.json` is updated.
 
+## Web Service
+
+Run a local web service that lets users upload SVG icons, fill env values, and download a zip output.
+
+```bash
+npm install
+npm run serve
+```
+
+Open `http://localhost:3000` in your browser, upload SVG files, adjust env values, and press **Generate + Download**.
+
+## Deployment (free)
+
+Recommended: Render (free tier).
+
+1. Push this repo to GitHub.
+2. Create a new **Web Service** on Render and connect the repo.
+3. Use these settings:
+   - Build command: `yarn install && yarn build`
+   - Start command: `yarn start`
+4. Deploy. Render will set `PORT` automatically.
+
+You can set environment defaults in Render if you want them to prefill the form.
+
 ## Input / Output
 
 - Input SVG icons: `svg/`
