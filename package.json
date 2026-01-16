@@ -1,0 +1,35 @@
+{
+  "name": "map-pin-creator",
+  "version": "1.0.0",
+  "description": "Generate map pin PNGs from SVG icons and build mapSettings.json.",
+  "private": true,
+  "main": "generatePins.ts",
+  "scripts": {
+    "generate": "tsx generatePins.ts",
+    "start": "npm run generate",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "map",
+    "pins",
+    "svg",
+    "png",
+    "sharp"
+  ],
+  "author": "Arda Sentürk",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

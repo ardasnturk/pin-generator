@@ -1,0 +1,50 @@
+{
+  "markerImages": {
+    "defaultPin": {
+      "uri": "pngWithJson/defaultPin.png",
+      "color": "#FFFFFF"
+    },
+    "defaultPinActive": {
+      "uri": "pngWithJson/defaultPinActive.png",
+      "color": "#000000"
+    }
+  },
+  "clusterSuperiorColor": "#000000",
+  "clusterSuperiorTextColor": "#000000",
+  "clusterFallbackColor": "#FFFFFF",
+  "clusterFallbackTextColor": "#000000",
+  "clusterDistance": 80,
+  "clusterMaxZoom": 15,
+  "clusterMinPoints": 3,
+  "mapCenterPosition": {
+    "latitude": 53.08105542,
+    "longitude": 8.90160091
+  },
+  "zoomLevel": {
+    "minZoom": 5,
+    "multipleMarkers": 13,
+    "singleMarker": 16
+  },
+  "layerStyles": {
+    "singleIcon": {
+      "iconSize": 0.75,
+      "iconAnchor": "bottom"
+    },
+    "clusteredCircle": {
+      "circleRadius": 20
+    },
+    "clusteredCircleShadow": {
+      "circleColor": "#949390",
+      "circleBlur": 0.8,
+      "circleRadius": 25,
+      "circleTranslate": [
+        0,
+        4
+      ]
+    },
+    "clusterCount": {
+      "textSize": 12,
+      "textColor": "#000000"
+    }
+  }
+}
