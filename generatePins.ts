@@ -28,6 +28,8 @@ const BASE_PIN_RING_COLOR_ACTIVE =
 const BASE_PIN_STROKE_COLOR_OWN =
   process.env.BASE_PIN_STROKE_COLOR_OWN ?? "#000";
 const COMPOSITE_SCALE = Number(process.env.COMPOSITE_SCALE ?? "0");
+const CLUSTER_COLOR = process.env.CLUSTER_COLOR ?? "#000";
+const CLUSTER_TEXT_COLOR = process.env.CLUSTER_TEXT_COLOR ?? "#000";
 const ICON_COLOR_ACTIVE = process.env.ICON_COLOR_ACTIVE ?? "#FFF";
 const ICON_COLOR_DEFAULT = process.env.ICON_COLOR_DEFAULT ?? "#000";
 const ICON_OFFSET_X_ACTIVE = Number(process.env.ICON_OFFSET_X_ACTIVE ?? "0");
@@ -245,6 +247,13 @@ async function run(): Promise<void> {
   }
 
   mapSettings.markerImages = markerImages;
+  mapSettings.clusterSuperiorColor = CLUSTER_COLOR;
+  mapSettings.clusterSuperiorTextColor = CLUSTER_TEXT_COLOR;
+  mapSettings.clusterFallbackColor = CLUSTER_COLOR;
+  mapSettings.clusterFallbackTextColor = CLUSTER_TEXT_COLOR;
+  (mapSettings.layerStyles as Record<string, any>).clusterCount.textColor =
+    CLUSTER_TEXT_COLOR;
+
   await fs.writeFile(
     mapSettingsOutput,
     `${JSON.stringify(mapSettings, null, 2)}\n`
