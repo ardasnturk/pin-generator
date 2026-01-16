@@ -15,7 +15,7 @@ try {
 
 const app = express();
 const port = Number(process.env.PORT ?? "3000");
-const rootDir = __dirname;
+const rootDir = process.env.APP_ROOT ?? process.cwd();
 
 const envOrDefault = (key: string, fallback: string) =>
   process.env[key] && process.env[key] !== "" ? process.env[key]! : fallback;
