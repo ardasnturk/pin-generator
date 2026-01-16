@@ -36,23 +36,25 @@ Configure via `.env`. See `.env.example` for a template.
 
 Supported variables:
 
-- `ICON_SCALE`
-- `COMPOSITE_SCALE`
-- `ICON_OFFSET_X_DEFAULT`
-- `ICON_OFFSET_Y_DEFAULT`
-- `ICON_OFFSET_X_ACTIVE`
-- `ICON_OFFSET_Y_ACTIVE`
-- `ICON_COLOR_ACTIVE`
-- `MAP_PINS_BASE_URI`
-- `MARKER_COLOR_DEFAULT`
-- `MARKER_COLOR_ACTIVE`
-- `BASE_PIN_COLOR_DEFAULT`
 - `BASE_PIN_COLOR_ACTIVE`
-- `BASE_PIN_RING_COLOR_ACTIVE`
+- `BASE_PIN_COLOR_DEFAULT`
 - `BASE_PIN_COLOR_OWN`
+- `BASE_PIN_RING_COLOR_ACTIVE`
 - `BASE_PIN_STROKE_COLOR_OWN`
+- `CLUSTER_COLOR`
+- `CLUSTER_TEXT_COLOR`
+- `COMPOSITE_SCALE`
+- `ICON_COLOR_ACTIVE`
+- `ICON_COLOR_DEFAULT`
+- `ICON_OFFSET_X_ACTIVE`
+- `ICON_OFFSET_X_DEFAULT`
+- `ICON_OFFSET_Y_ACTIVE`
+- `ICON_OFFSET_Y_DEFAULT`
+- `ICON_SCALE`
+- `MAP_PINS_BASE_URI`
 
 ## Notes
 
 - Icons named `defaultPin`, `defaultPinActive`, `ownLocationPin` in `svg/` are skipped automatically.
 - `.env` is optional; defaults are used if not present.
+- `CLUSTER_COLOR` and `CLUSTER_TEXT_COLOR` overwrite the related fields in `mapSettings.json`.
