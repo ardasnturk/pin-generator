@@ -28,6 +28,7 @@ const BASE_PIN_RING_COLOR_ACTIVE =
 const BASE_PIN_STROKE_COLOR_OWN =
   process.env.BASE_PIN_STROKE_COLOR_OWN ?? "#000";
 const COMPOSITE_SCALE = Number(process.env.COMPOSITE_SCALE ?? "0");
+const OUTPUT_SCALE = Number(process.env.OUTPUT_SCALE ?? "1"); // 1: 72x72, 2: 144x144, 3: 216x216
 const CLUSTER_COLOR = process.env.CLUSTER_COLOR ?? "#000";
 const CLUSTER_TEXT_COLOR = process.env.CLUSTER_TEXT_COLOR ?? "#000";
 const ICON_COLOR_ACTIVE = process.env.ICON_COLOR_ACTIVE ?? "#FFF";
@@ -66,7 +67,7 @@ async function getBaseMeta(input: string | Buffer): Promise<sharp.Metadata> {
 
 function applyColorMap(
   svgBuffer: Buffer,
-  replacements: Record<string, string>
+  replacements: Record<string, string>,
 ): Buffer {
   let svg = svgBuffer.toString("utf8");
   for (const [from, to] of Object.entries(replacements)) {
@@ -112,21 +113,22 @@ async function compositePin(
   width: number,
   height: number,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
+  scale: number,
 ): Promise<void> {
-  const scaledWidth = Math.round(width * COMPOSITE_SCALE);
-  const scaledHeight = Math.round(height * COMPOSITE_SCALE);
+  const scaledWidth = Math.round(width * COMPOSITE_SCALE * scale);
+  const scaledHeight = Math.round(height * COMPOSITE_SCALE * scale);
   const left = Math.round(
-    (scaledWidth - icon.width) / 2 + offsetX * COMPOSITE_SCALE
+    (scaledWidth - icon.width) / 2 + offsetX * COMPOSITE_SCALE * scale,
   );
   const top = Math.round(
-    (scaledHeight - icon.height) / 2 + offsetY * COMPOSITE_SCALE
+    (scaledHeight - icon.height) / 2 + offsetY * COMPOSITE_SCALE * scale,
   );
 
   await sharp(baseInput)
     .resize(scaledWidth, scaledHeight)
     .composite([{ input: icon.buffer, left, top }])
-    .resize(width, height)
+    .resize(width * scale, height * scale)
     .png()
     .toFile(outPath);
 }
@@ -164,23 +166,42 @@ async function run(): Promise<void> {
   const baseMetaDefault = await getBaseMeta(baseDefaultColored);
   const baseMetaActive = await getBaseMeta(baseActiveColored);
   const iconSize = Math.round(
-    Math.min(baseMetaDefault.width, baseMetaDefault.height) * ICON_SCALE
+    Math.min(baseMetaDefault.width, baseMetaDefault.height) * ICON_SCALE,
   );
-  const iconRenderSize = Math.round(iconSize * COMPOSITE_SCALE);
+  const iconRenderSize = Math.round(iconSize * COMPOSITE_SCALE * OUTPUT_SCALE);
 
   const baseOutputDefault = path.join(outputDir, "defaultPin.png");
   const baseOutputActive = path.join(outputDir, "defaultPinActive.png");
   const baseOutputOwnLocation = path.join(outputDir, "ownLocationPin.png");
 
-  await sharp(baseDefaultColored).png().toFile(baseOutputDefault);
-  await sharp(baseActiveColored).png().toFile(baseOutputActive);
-  await sharp(baseOwnLocationColored).png().toFile(baseOutputOwnLocation);
+  await sharp(baseDefaultColored)
+    .resize(
+      Math.round(baseMetaDefault.width * OUTPUT_SCALE),
+      Math.round(baseMetaDefault.height * OUTPUT_SCALE),
+    )
+    .png()
+    .toFile(baseOutputDefault);
+  await sharp(baseActiveColored)
+    .resize(
+      Math.round(baseMetaActive.width * OUTPUT_SCALE),
+      Math.round(baseMetaActive.height * OUTPUT_SCALE),
+    )
+    .png()
+    .toFile(baseOutputActive);
+  const baseMetaOwnLocation = await getBaseMeta(baseOwnLocationColored);
+  await sharp(baseOwnLocationColored)
+    .resize(
+      Math.round(baseMetaOwnLocation.width * OUTPUT_SCALE),
+      Math.round(baseMetaOwnLocation.height * OUTPUT_SCALE),
+    )
+    .png()
+    .toFile(baseOutputOwnLocation);
 
   const svgNames = svgFiles
     .map((svgPath) => path.basename(svgPath, ".svg"))
     .filter(
       (name) =>
-        !["defaultPin", "defaultPinActive", "ownLocationPin"].includes(name)
+        !["defaultPin", "defaultPinActive", "ownLocationPin"].includes(name),
     )
     .sort((a, b) => a.localeCompare(b));
 
@@ -203,7 +224,8 @@ async function run(): Promise<void> {
       baseMetaDefault.width,
       baseMetaDefault.height,
       ICON_OFFSET_X_DEFAULT,
-      ICON_OFFSET_Y_DEFAULT
+      ICON_OFFSET_Y_DEFAULT,
+      OUTPUT_SCALE,
     );
     await compositePin(
       baseActiveColored,
@@ -212,12 +234,13 @@ async function run(): Promise<void> {
       baseMetaActive.width,
       baseMetaActive.height,
       ICON_OFFSET_X_ACTIVE,
-      ICON_OFFSET_Y_ACTIVE
+      ICON_OFFSET_Y_ACTIVE,
+      OUTPUT_SCALE,
     );
   }
 
   const mapSettings = JSON.parse(
-    await fs.readFile(mapSettingsTemplate, "utf8")
+    await fs.readFile(mapSettingsTemplate, "utf8"),
   ) as Record<string, unknown>;
   const baseUri = MAP_PINS_BASE_URI.replace(/\/+$/, "");
   const markerImages: Record<string, { uri: string; color: string }> = {
@@ -256,7 +279,7 @@ async function run(): Promise<void> {
 
   await fs.writeFile(
     mapSettingsOutput,
-    `${JSON.stringify(mapSettings, null, 2)}\n`
+    `${JSON.stringify(mapSettings, null, 2)}\n`,
   );
 
   console.log(`Done. Output in: ${outputDir}`);
