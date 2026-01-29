@@ -21,6 +21,16 @@ The script reads SVG icons from `svg/`, composites them with the base pin SVGs i
 npx tsx generatePins.ts
 ```
 
+### Generating PNGs in Different Sizes
+
+To change the output PNG size, add the following line to your `.env` file:
+
+```
+OUTPUT_SCALE=2
+```
+
+For example, this will generate all pins and icons at 2x (144x144) size. Use 3 for 216x216, or 1 for 72x72.
+
 When it finishes, PNGs are written to `pngWithSvg/` and `mapSettings.json` is updated.
 
 ## Web Service
@@ -76,6 +86,7 @@ Supported variables:
 - `ICON_OFFSET_Y_DEFAULT`
 - `ICON_SCALE`
 - `MAP_PINS_BASE_URI`
+- `OUTPUT_SCALE` (Default: 1, set to 2 or 3 to change PNG output size)
 
 ## Notes
 
