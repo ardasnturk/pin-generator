@@ -26,12 +26,9 @@ const DEFAULT_ENV: Record<string, string> = {
   BASE_PIN_COLOR_OWN: envOrDefault("BASE_PIN_COLOR_OWN", "#FFF"),
   BASE_PIN_RING_COLOR_ACTIVE: envOrDefault(
     "BASE_PIN_RING_COLOR_ACTIVE",
-    "#FFF"
+    "#FFF",
   ),
-  BASE_PIN_STROKE_COLOR_OWN: envOrDefault(
-    "BASE_PIN_STROKE_COLOR_OWN",
-    "#000"
-  ),
+  BASE_PIN_STROKE_COLOR_OWN: envOrDefault("BASE_PIN_STROKE_COLOR_OWN", "#000"),
   CLUSTER_COLOR: envOrDefault("CLUSTER_COLOR", "#000"),
   CLUSTER_TEXT_COLOR: envOrDefault("CLUSTER_TEXT_COLOR", "#000"),
   COMPOSITE_SCALE: envOrDefault("COMPOSITE_SCALE", "2"),
@@ -337,16 +334,32 @@ function renderFormHtml(): string {
           <div class="hint">You can upload multiple SVGs. Files named defaultPin, defaultPinActive, ownLocationPin are skipped.</div>
         </section>
         <section class="grid">
+          ${inputRow("Map Pins Base URI", "MAP_PINS_BASE_URI")}
+          <label class="field" style="display:flex;flex-direction:column;gap:0.4rem;align-items:flex-start;">
+            <span style="font-weight:600;display:flex;align-items:center;gap:0.5em;">
+              Output Size
+            </span>
+            <div style="display:flex;gap:0.5em;align-items:center;">
+              <select name="OUTPUT_SCALE" style="padding:0.5em 1.2em 0.5em 0.8em;border-radius:10px;border:1px solid var(--border);font-size:1em;background:var(--card);color:var(--field-text);font-weight:600;">
+                <option value="1"${DEFAULT_ENV.OUTPUT_SCALE === "1" ? " selected" : ""}>1x (72x72 px)</option>
+                <option value="2"${DEFAULT_ENV.OUTPUT_SCALE === "2" ? " selected" : ""}>2x (144x144 px)</option>
+                <option value="3"${DEFAULT_ENV.OUTPUT_SCALE === "3" ? " selected" : ""}>3x (216x216 px)</option>
+              </select>
+              <span class="hint" style="margin-left:0.5em;">All icons and pins will be scaled proportionally.</span>
+            </div>
+          </label>
+        </section>
+        <section class="grid">
           ${colorRow("Base Pin Color (Active)", "BASE_PIN_COLOR_ACTIVE")}
           ${colorRow("Base Pin Color (Default)", "BASE_PIN_COLOR_DEFAULT")}
           ${colorRow("Base Pin Color (Own)", "BASE_PIN_COLOR_OWN")}
           ${colorRow(
             "Base Pin Ring Color (Active)",
-            "BASE_PIN_RING_COLOR_ACTIVE"
+            "BASE_PIN_RING_COLOR_ACTIVE",
           )}
           ${colorRow(
             "Base Pin Stroke Color (Own)",
-            "BASE_PIN_STROKE_COLOR_OWN"
+            "BASE_PIN_STROKE_COLOR_OWN",
           )}
           ${colorRow("Cluster Color", "CLUSTER_COLOR")}
           ${colorRow("Cluster Text Color", "CLUSTER_TEXT_COLOR")}
@@ -358,7 +371,6 @@ function renderFormHtml(): string {
           ${inputRow("Icon Offset Y (Active)", "ICON_OFFSET_Y_ACTIVE", "number")}
           ${inputRow("Icon Offset Y (Default)", "ICON_OFFSET_Y_DEFAULT", "number")}
           ${inputRow("Icon Scale", "ICON_SCALE", "number")}
-          ${inputRow("Map Pins Base URI", "MAP_PINS_BASE_URI")}
         </section>
         <section class="preview" aria-live="polite" id="previewSection">
           <div class="preview-header">
@@ -601,7 +613,9 @@ app.post("/preview", uploadSingle, async (req, res) => {
     return;
   }
 
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "map-pins-preview-"));
+  const tempRoot = await fs.mkdtemp(
+    path.join(os.tmpdir(), "map-pins-preview-"),
+  );
   const svgDir = path.join(tempRoot, "svg");
   const outputDir = path.join(tempRoot, "pngWithSvg");
   const mapSettingsOutput = path.join(tempRoot, "mapSettings.json");
@@ -677,7 +691,7 @@ app.post("/generate", uploadArray, async (req, res) => {
         const safeName = path.basename(file.originalname);
         const outPath = path.join(svgDir, safeName);
         return fs.writeFile(outPath, file.buffer);
-      })
+      }),
     );
 
     await generatePins({
@@ -691,10 +705,7 @@ app.post("/generate", uploadArray, async (req, res) => {
     });
 
     res.setHeader("Content-Type", "application/zip");
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="map-pins.zip"'
-    );
+    res.setHeader("Content-Disposition", 'attachment; filename="map-pins.zip"');
 
     const archive = archiver("zip", { zlib: { level: 9 } });
     archive.on("error", (err) => {
@@ -713,5 +724,7 @@ app.post("/generate", uploadArray, async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Map Pin Creator web service running on http://localhost:${port}`);
+  console.log(
+    `Map Pin Creator web service running on http://localhost:${port}`,
+  );
 });
